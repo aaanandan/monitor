@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # Fluentd collects logs from the photoupload app
+  fluentd:
+    image: fluent/fluentd:v1.14-1
+    ports:
+      - "24224:24224"
+    volumes:
+      - ./fluentd/fluent.conf:/fluentd/etc/fluent.conf
+    networks:
+      - monitoring_network
+
+  # Prometheus collects metrics from the photoupload app
+  prometheus:
+    image: prom/prometheus:v2.41.0
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring_network
+
+  # Grafana for visualizing metrics from Prometheus
+  grafana:
+    image: grafana/grafana:9.6.7
+    container_name: grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: 'admin'
+    ports:
+      - "3000:3000"
+    networks:
+      - monitoring_network
+
+  # Mailhog for capturing emails from the application
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - monitoring_network
+
+networks:
+  monitoring_network:
+    driver: bridge
