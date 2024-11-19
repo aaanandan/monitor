@@ -7,16 +7,16 @@ services:
     ports:
       - "24224:24224"
     volumes:
-      - ./fluentd/fluent.conf:/fluentd/etc/fluent.conf
+      - ./fluentd:/fluentd/etc/
     networks:
       - monitoring_network
 
   # Prometheus collects metrics from the photoupload app
   prometheus:
-    image: prom/prometheus:v2.41.0
+    image: prom/prometheus
     container_name: prometheus
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus:/etc/prometheus
     ports:
       - "9090:9090"
     networks:
@@ -24,7 +24,7 @@ services:
 
   # Grafana for visualizing metrics from Prometheus
   grafana:
-    image: grafana/grafana:9.6.7
+    image: grafana/grafana
     container_name: grafana
     environment:
       GF_SECURITY_ADMIN_PASSWORD: 'admin'
@@ -35,7 +35,7 @@ services:
 
   # Mailhog for capturing emails from the application
   mailhog:
-    image: mailhog/mailhog:v1.0.0
+    image: mailhog/mailhog
     ports:
       - "1025:1025"  # SMTP
       - "8025:8025"  # Web UI
